@@ -20,6 +20,7 @@ class MeshViewAPI:
 
         self.sent = []
         self.reported = []
+        self.chat = []
 
         # Historial persistente de paquetes reportados
         self._reported_history = {}
@@ -105,6 +106,10 @@ class MeshViewAPI:
             if reported is not None:
                 self.reported = reported
 
+            chat = self._get_chat()
+            if chat is not None:
+            self.chat = chat 
+
         finally:
             self._refreshing = False
 
@@ -133,6 +138,41 @@ class MeshViewAPI:
             parse_packet(packet)
             for packet in packets
         ]
+    
+    def _get_chat(self, limit=8):
+
+    data = self._get(
+        "packets",
+        portnum=1,
+        limit=limit,
+    )
+
+    if data is None:
+        return None
+
+    packets = data.get("packets", [])
+
+    packets.sort(
+        key=lambda x: x["import_time_us"],
+        reverse=True,
+    )
+
+    chat = []
+
+    for packet in packets:
+        chat.append(
+            {
+                "time": datetime.fromtimestamp(
+                    packet["import_time_us"] / 1_000_000
+                ).strftime("%H:%M:%S"),
+                "from": packet.get("long_name", ""),
+                "channel": packet.get("channel", ""),
+                "message": packet.get("payload", ""),
+                "reply_id": packet.get("reply_id"),
+            }
+        )
+
+    return chat
 
     def _get_reported(self, limit=15):
 
