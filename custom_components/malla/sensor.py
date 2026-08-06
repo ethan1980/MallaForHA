@@ -23,6 +23,7 @@ async def async_setup_entry(
         [
             MeshSentSensor(api),
             MeshReportedSensor(api),
+            MeshHealthSensor(api),
         ]
     )
 
@@ -72,3 +73,30 @@ class MeshReportedSensor(MeshBaseSensor):
         await self._refresh_once()
         self._packets = self.api.reported
         self._state = len(self._packets)
+        
+class MeshHealthSensor(MeshBaseSensor):
+    _attr_name = "Malla Health"
+    _attr_unique_id = "malla_health"
+    _attr_icon = "mdi:heart-pulse"
+
+    async def async_update(self):
+        await self._refresh_once()
+
+        if self.api.last_success:
+            self._state = "Online"
+        else:
+            self._state = "Offline"
+
+    @property
+    def extra_state_attributes(self):
+        return {
+            "last_success": self.api.last_success,
+            "last_error": self.api.last_error,
+            "latency_ms": self.api.last_latency,
+            "error_count": self.api.error_count,
+            "circuit_breaker": (
+                "Open"
+                if self.api._circuit_open_until > 0
+                else "Closed"
+            ),
+        }
