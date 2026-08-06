@@ -5,6 +5,7 @@ import time
 import requests
 
 from .parser import parse_packet
+from datetime import datetime
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,21 +44,32 @@ class MeshViewAPI:
         self._circuit_open_until = 0.0
         self._circuit_timeout = 300
 
+        self.last_success = None
+        self.last_error = None
+        self.last_latency = None
+        self.error_count = 0
+        
     def _get(self, endpoint, **params):
 
         if time.time() < self._circuit_open_until:
             return None
 
         try:
+            start = time.perf_counter()
             response = self._session.get(
                 f"{BASE_URL}/{endpoint}",
                 params=params,
                 timeout=5,
             )
             response.raise_for_status()
+            self.last_latency = round((time.perf_counter() - start) * 1000, 1)
+            self.last_success = datetime.now().isoformat()
+            self.last_error = None
             self._circuit_open_until = 0.0
             return response.json()
         except requests.exceptions.RequestException as err:
+            self.error_count += 1
+            self.last_error = str(err)
             self._circuit_open_until = time.time() + self._circuit_timeout
             _LOGGER.warning(
                 "MeshView API error: %s (circuit abierto %ss)",
