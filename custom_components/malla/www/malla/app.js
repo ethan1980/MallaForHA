@@ -1,8 +1,11 @@
 const messagesContainer = document.getElementById('messages');
-const channelFilter = document.getElementById('channelFilter');
 const banner = document.getElementById('newMessagesBanner');
 
-console.log('MALLA APP VERSION 3 - LIVE API MODE');
+const messageInput = document.getElementById('messageInput');
+const channelSelect = document.getElementById('channelSelect');
+const sendButton = document.getElementById('sendButton');
+
+console.log('MALLA APP VERSION 4 - SEND ENABLED');
 console.log('Malla cargada', new Date().toLocaleTimeString());
 
 let allMessages = [];
@@ -26,7 +29,7 @@ function renderMessages(messages) {
 
   if (messages.length === 0) {
     messagesContainer.innerHTML =
-      '<p style="color:#94a3b8">No hay mensajes para este canal.</p>';
+      '<p style="color:#94a3b8;padding:16px;">No hay mensajes todavía.</p>';
     return;
   }
 
@@ -47,27 +50,18 @@ function renderMessages(messages) {
 
         <div class="meta">
           <span class="channel ${channelClass(channel)}">${channel}</span>
-          <span>📶 RSSI ${m.rssi ?? '—'}</span>
-          <span>📡 SNR ${m.snr ?? '—'}</span>
-          <span>↔ Hops ${m.hops ?? '—'}</span>
+
+          ${m.rssi != null ? `<span>📶 RSSI ${m.rssi}</span>` : ''}
+
+          ${m.snr != null ? `<span>📡 SNR ${m.snr}</span>` : ''}
+
+          ${m.hops != null ? `<span>↔ Hops ${m.hops}</span>` : ''}
         </div>
       </article>
     `;
   }
 
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-function applyFilter() {
-  const selected = channelFilter.value;
-
-  if (selected === 'all') {
-    renderMessages(allMessages);
-  } else {
-    renderMessages(
-      allMessages.filter(m => (m.channel || '') === selected)
-    );
-  }
 }
 
 function showBanner() {
@@ -93,7 +87,7 @@ async function loadMessages() {
     let currentSignature = null;
 
     if (data.length > 0) {
-      const last = data[data.length - 1];
+      const last = data[0]; // el backend devuelve primero el más nuevo
 
       currentSignature =
         (last.from || last.author || '') + '|' +
@@ -113,14 +107,60 @@ async function loadMessages() {
     // Mostrar del más antiguo al más nuevo
     allMessages = [...data].reverse();
 
-    applyFilter();
+    renderMessages(allMessages);
 
   } catch (err) {
     console.error('Error cargando mensajes:', err);
   }
 }
 
-channelFilter.addEventListener('change', applyFilter);
+async function sendMessage() {
+  const message = messageInput.value.trim();
+  const channel = channelSelect.value;
+
+  if (!message) return;
+
+  sendButton.disabled = true;
+
+  try {
+    const response = await fetch('/api/malla/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message,
+        channel,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || 'Error enviando mensaje');
+    }
+
+    messageInput.value = '';
+
+    // Actualizar chat tras enviar
+    setTimeout(loadMessages, 1000);
+
+  } catch (err) {
+    console.error(err);
+    alert('No se pudo enviar el mensaje');
+  } finally {
+    sendButton.disabled = false;
+  }
+}
+
+// Eventos de envío
+sendButton.addEventListener('click', sendMessage);
+
+messageInput.addEventListener('keydown', (ev) => {
+  if (ev.key === 'Enter') {
+    sendMessage();
+  }
+});
 
 // Carga inicial
 loadMessages();
