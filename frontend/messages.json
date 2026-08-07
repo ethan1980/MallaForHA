@@ -1,0 +1,92 @@
+[
+  {
+    "author": "Refugio 104",
+    "text": "Buena visibilidad hoy, veo Vigo 👋",
+    "channel": "LongFast",
+    "time": "13:05",
+    "rssi": -97,
+    "snr": -3.2,
+    "hops": 2
+  },
+  {
+    "author": "M-X Wing",
+    "text": "Yo desde Parla recibo habitualmente Ciudad Real en directo.",
+    "channel": "SFNarrow",
+    "time": "13:06",
+    "rssi": -101,
+    "snr": -6.1,
+    "hops": 3
+  },
+  {
+    "author": "TioPeter02",
+    "text": "Si están bien organizados los routers no se cuentan esos saltos.",
+    "channel": "SFNarrow",
+    "time": "13:07",
+    "rssi": -94,
+    "snr": -1.4,
+    "hops": 1
+  },
+  {
+    "author": "snv3_base",
+    "text": "3 a Pastoriza",
+    "channel": "LongFast",
+    "time": "13:08",
+    "rssi": -88,
+    "snr": 1.2,
+    "hops": 1
+  }, 
+  {
+    "author": "snv3_base",
+    "text": "3 a Pastoriza",
+    "channel": "LongFast",
+    "time": "13:08",
+    "rssi": -88,
+    "snr": 1.2,
+    "hops": 1
+  },
+  {
+  "author": "M-Garbanzo",
+  "text": "Poco a poco van bajando los nodos mal configurados.",
+  "channel": "SFNarrow",
+  "time": "13:09",
+  "rssi": -92,
+  "snr": -0.8,
+  "hops": 2
+},
+{
+  "author": "M-Garbanzo",
+  "text": "Poco a poco van bajando los nodos mal configurados.",
+  "channel": "SFNarrow",
+  "time": "13:09",
+  "rssi": -92,
+  "snr": -0.8,
+  "hops": 2
+},
+{
+    "author": "Refugio 104",
+    "text": "Buena visibilidad hoy, veo Vigo 👋",
+    "channel": "LongFast",
+    "time": "13:05",
+    "rssi": -97,
+    "snr": -3.2,
+    "hops": 2
+  },
+  {
+  "author": "M-Garbanzo",
+  "text": "Poco a poco van bajando los nodos mal configurados.",
+  "channel": "SFNarrow",
+  "time": "13:09",
+  "rssi": -92,
+  "snr": -0.8,
+  "hops": 2
+},
+{
+    "author": "snv3_base",
+    "text": "3 a Pastoriza",
+    "channel": "LongFast",
+    "time": "13:08",
+    "rssi": -88,
+    "snr": 1.2,
+    "hops": 1
+  }
+]
