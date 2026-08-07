@@ -2,12 +2,13 @@ const messagesContainer = document.getElementById('messages');
 const channelFilter = document.getElementById('channelFilter');
 const banner = document.getElementById('newMessagesBanner');
 
+console.log('MALLA APP VERSION 3 - LIVE API MODE');
 console.log('Malla cargada', new Date().toLocaleTimeString());
 
 let allMessages = [];
 let lastMessageSignature = null;
 
-function channelClass(channel) {
+function channelClass(channel = '') {
   switch (channel.toLowerCase()) {
     case 'longfast':
       return 'longfast';
@@ -30,20 +31,25 @@ function renderMessages(messages) {
   }
 
   for (const m of messages) {
+    const author = m.author || m.from || 'Desconocido';
+    const text = m.text || m.message || '';
+    const time = m.time || '';
+    const channel = m.channel || 'Desconocido';
+
     messagesContainer.innerHTML += `
       <article class="message">
         <div class="message-header">
-          <span class="author">${m.author}</span>
-          <span class="time">${m.time}</span>
+          <span class="author">${author}</span>
+          <span class="time">${time}</span>
         </div>
 
-        <div class="text">${m.text}</div>
+        <div class="text">${text}</div>
 
         <div class="meta">
-          <span class="channel ${channelClass(m.channel)}">${m.channel}</span>
-          <span>📶 RSSI ${m.rssi}</span>
-          <span>📡 SNR ${m.snr}</span>
-          <span>↔ Hops ${m.hops}</span>
+          <span class="channel ${channelClass(channel)}">${channel}</span>
+          <span>📶 RSSI ${m.rssi ?? '—'}</span>
+          <span>📡 SNR ${m.snr ?? '—'}</span>
+          <span>↔ Hops ${m.hops ?? '—'}</span>
         </div>
       </article>
     `;
@@ -59,7 +65,7 @@ function applyFilter() {
     renderMessages(allMessages);
   } else {
     renderMessages(
-      allMessages.filter(m => m.channel === selected)
+      allMessages.filter(m => (m.channel || '') === selected)
     );
   }
 }
@@ -76,24 +82,25 @@ function showBanner() {
 
 async function loadMessages() {
   try {
-    // Evita caché del navegador
-    const response = await fetch('messages.json');
+    const response = await fetch('/api/malla/chat');
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
 
     const data = await response.json();
 
-    // Firma del último mensaje
     let currentSignature = null;
 
     if (data.length > 0) {
       const last = data[data.length - 1];
 
       currentSignature =
-        last.author + '|' +
-        last.time + '|' +
-        last.text;
+        (last.from || last.author || '') + '|' +
+        (last.time || '') + '|' +
+        (last.message || last.text || '');
     }
 
-    // Mostrar banner si cambia el último mensaje
     if (
       lastMessageSignature !== null &&
       currentSignature !== lastMessageSignature
@@ -103,7 +110,8 @@ async function loadMessages() {
 
     lastMessageSignature = currentSignature;
 
-    allMessages = data;
+    // Mostrar del más antiguo al más nuevo
+    allMessages = [...data].reverse();
 
     applyFilter();
 
