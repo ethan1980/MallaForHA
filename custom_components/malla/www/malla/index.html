@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Malla</title>
+
+<link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+<div id="app">
+
+    <aside class="sidebar">
+
+        <h1>🌐 Malla</h1>
+
+        <nav>
+
+            <button class="active">💬 Chat</button>
+
+            <button>📡 Nodos</button>
+
+            <button>📊 Estadísticas</button>
+
+            <button>❤️ Salud</button>
+
+            <button>⚙ Configuración</button>
+
+        </nav>
+
+    </aside>
+
+    <main>
+
+        <header>
+
+            <h2>Global MeshView Chat</h2>
+
+            <span class="online">🟢 Online</span>
+
+        </header>
+
+        <div id="newMessagesBanner" class="banner hidden">
+            📡 Nuevos mensajes recibidos
+        </div>
+
+        <section id="messages">
+
+        </section>
+
+        <footer>
+
+            <input
+                placeholder="Escribe un mensaje..."
+            >
+
+            <select id="channelFilter">
+                <option value="all">🌍 Todos</option>
+                <option value="SFNarrow">🟢 SFNarrow</option>
+                <option value="LongFast">🔵 LongFast</option>
+                <option value="MediumSlow">🟠 MediumSlow</option>
+            </select>
+
+            <button>
+
+                Enviar
+
+            </button>
+
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+
+</html>

@@ -1,4 +1,5 @@
 from homeassistant.const import Platform
+from .panel import async_register_panel
 import logging
 
 
@@ -36,7 +37,7 @@ async def async_setup_entry(hass, entry):
         entry,
         PLATFORMS,
     )
-
+    await async_register_panel(hass)
     return True
 
 
