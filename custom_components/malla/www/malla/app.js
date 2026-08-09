@@ -3,6 +3,34 @@ const banner = document.getElementById('newMessagesBanner');
 
 const messageInput = document.getElementById('messageInput');
 const channelSelect = document.getElementById('channelSelect');
+async function loadChannels() {
+  try {
+    const response = await fetch('/api/malla/channels');
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const channels = await response.json();
+
+    channelSelect.innerHTML = '';
+
+    for (const ch of channels) {
+      const option = document.createElement('option');
+      option.value = ch;
+      option.textContent = ch;
+      channelSelect.appendChild(option);
+    }
+
+    // Seleccionar el primero disponible
+    if (channels.length > 0) {
+      channelSelect.value = channels[0];
+    }
+
+  } catch (err) {
+    console.error('Error cargando canales:', err);
+  }
+}
 const sendButton = document.getElementById('sendButton');
 
 console.log('MALLA APP VERSION 4 - SEND ENABLED');
@@ -163,6 +191,7 @@ messageInput.addEventListener('keydown', (ev) => {
 });
 
 // Carga inicial
+loadChannels();
 loadMessages();
 
 // Auto-refresh cada 5 segundos

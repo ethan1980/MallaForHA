@@ -78,6 +78,42 @@ class MallaSendView(HomeAssistantView):
 
         return web.json_response({"ok": True})
 
+class MallaChannelsView(HomeAssistantView):
+    url = "/api/malla/channels"
+    name = "api:malla:channels"
+    requires_auth = False
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        self.hass = hass
+
+    async def get(self, request: web.Request) -> web.Response:
+        channels = []
+
+        for state in self.hass.states.async_all():
+            entity_id = state.entity_id
+
+            if (
+                entity_id.startswith("meshtastic.")
+                and "_channel_" in entity_id
+            ):
+                raw = entity_id.split("_channel_", 1)[1]
+
+                # Capitalización amigable
+                if raw.lower() == "sfnarrow":
+                    name = "SFNarrow"
+                elif raw.lower() == "longfast":
+                    name = "LongFast"
+                elif raw.lower() == "mediumslow":
+                    name = "MediumSlow"
+                else:
+                    name = raw.capitalize()
+
+                channels.append(name)
+
+        channels = sorted(set(channels))
+
+        return web.json_response(channels)
+
 async def async_register_panel(hass: HomeAssistant) -> None:
     frontend.async_register_built_in_panel(
         hass,
@@ -93,3 +129,4 @@ async def async_register_panel(hass: HomeAssistant) -> None:
 
     hass.http.register_view(MallaChatView(hass))
     hass.http.register_view(MallaSendView(hass))
+    hass.http.register_view(MallaChannelsView(hass))
