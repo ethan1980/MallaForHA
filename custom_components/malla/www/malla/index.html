@@ -14,9 +14,8 @@
 
     <nav>
 
-        <button class="active">💬 Chat</button>
-
-        <button>📡 Nodos</button>
+        <button id="tabChat" class="active">💬 Chat</button>
+        <button id="tabNodes">📡 Nodos</button>
 
         <button>📊 Estadísticas</button>
 
@@ -30,6 +29,8 @@
 
 <main>
 
+   <section id="chatView" class="view active">
+    
     <header>
 
         <h2>Global MeshView Chat</h2>
@@ -69,6 +70,19 @@
         </button>
 
     </footer>
+   </section>
+   <section id="nodesView" class="view hidden">
+
+    <header>
+        <h2>📡 Nodos MeshView</h2>
+        <span id="nodesCount" class="online">0 nodos</span>
+    </header>
+
+    <div id="nodesList" class="nodes-list">
+        <p>Cargando nodos...</p>
+    </div>
+
+   </section>
 
 </main>
 

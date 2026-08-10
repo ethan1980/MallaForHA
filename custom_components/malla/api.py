@@ -43,7 +43,7 @@ class MeshViewAPI:
 
         # Circuit breaker cuando MeshView falla
         self._circuit_open_until = 0.0
-        self._circuit_timeout = 300
+        self._circuit_timeout = 60
 
         self.last_success = None
         self.last_error = None
@@ -60,7 +60,7 @@ class MeshViewAPI:
             response = self._session.get(
                 f"{BASE_URL}/{endpoint}",
                 params=params,
-                timeout=5,
+                timeout=10,
             )
             response.raise_for_status()
             self.last_latency = round((time.perf_counter() - start) * 1000, 1)

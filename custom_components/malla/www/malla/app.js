@@ -3,6 +3,13 @@ const banner = document.getElementById('newMessagesBanner');
 
 const messageInput = document.getElementById('messageInput');
 const channelSelect = document.getElementById('channelSelect');
+const tabChat = document.getElementById('tabChat');
+const tabNodes = document.getElementById('tabNodes');
+const chatView = document.getElementById('chatView');
+const nodesView = document.getElementById('nodesView');
+const nodesList = document.getElementById('nodesList');
+const nodesCount = document.getElementById('nodesCount');
+
 async function loadChannels() {
   try {
     const response = await fetch('/api/malla/channels');
@@ -102,6 +109,67 @@ function showBanner() {
   }, 3000);
 }
 
+function showChat() {
+  chatView.classList.remove('hidden');
+  nodesView.classList.add('hidden');
+
+  tabChat.classList.add('active');
+  tabNodes.classList.remove('active');
+}
+
+function showNodes() {
+  chatView.classList.add('hidden');
+  nodesView.classList.remove('hidden');
+
+  tabChat.classList.remove('active');
+  tabNodes.classList.add('active');
+
+  loadNodes();
+}
+
+async function loadNodes() {
+  try {
+    const response = await fetch('/api/malla/nodes');
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const nodes = await response.json();
+
+    nodesCount.textContent = `${nodes.length} nodos`;
+
+    if (nodes.length === 0) {
+      nodesList.innerHTML = '<p>No hay nodos disponibles.</p>';
+      return;
+    }
+
+    nodesList.innerHTML = nodes.map(node => `
+      <div class="node-card">
+        <div class="node-header">
+          <div class="node-name">${node.name}</div>
+          <div class="node-status ${node.online ? 'online' : 'offline'}">
+            ${node.online ? '🟢 Online' : '🔴 Offline'}
+          </div>
+        </div>
+
+        <div class="node-meta">
+          <span>📡 ${node.channel || '—'}</span>
+          <span>🕒 ${node.last_seen_human || 'desconocido'}</span>
+        </div>
+
+        <div class="node-meta" style="margin-top:8px">
+          <span class="node-id">ID ${node.id}</span>
+        </div>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    console.error('Error cargando nodos:', err);
+    nodesList.innerHTML = '<p>Error cargando nodos.</p>';
+  }
+}
+
 async function loadMessages() {
   try {
     const response = await fetch('/api/malla/chat');
@@ -193,6 +261,9 @@ messageInput.addEventListener('keydown', (ev) => {
 // Carga inicial
 loadChannels();
 loadMessages();
+
+tabChat.addEventListener('click', showChat);
+tabNodes.addEventListener('click', showNodes);
 
 // Auto-refresh cada 5 segundos
 setInterval(loadMessages, 5000);

@@ -66,6 +66,7 @@ main {
   flex-direction: column;
   min-width: 0;
   height: 100vh;
+  overflow: hidden;
   background: #020817;
 }
 
@@ -77,6 +78,7 @@ header {
   align-items: center;
   justify-content: space-between;
   background: #061128;
+  flex-shrink: 0;
 }
 
 header h2 {
@@ -87,6 +89,20 @@ header h2 {
 .online {
   color: #4ade80;
   font-weight: 600;
+}
+
+/* Vistas */
+
+.view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.view.hidden {
+  display: none;
 }
 
 /* Banner */
@@ -228,6 +244,64 @@ header h2 {
 .composer button:disabled {
   opacity: .6;
   cursor: wait;
+}
+
+/* Nodes */
+
+.nodes-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.node-card {
+  background: #081329;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 18px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+.node-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.node-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.node-status {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.node-status.online {
+  color: #5ee27a;
+}
+
+.node-status.offline {
+  color: #ff6b6b;
+}
+
+.node-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 13px;
+  color: #b8c2d6;
+}
+
+.node-id {
+  color: #7f8aa3;
+  font-family: monospace;
 }
 
 /* Mobile */
