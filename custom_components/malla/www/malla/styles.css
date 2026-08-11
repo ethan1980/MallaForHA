@@ -340,4 +340,30 @@ header h2 {
   .composer button {
     width: 100%;
   }
+
+  .nodes-toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px 0 20px;
+  flex-wrap: wrap;
+  }
+
+  .nodes-toolbar input,
+  .nodes-toolbar select {
+  background: #07132b;
+  border: 1px solid rgba(255,255,255,.08);
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: 14px;
+  outline: none;
+  }
+
+  .nodes-toolbar input {
+  flex: 1;
+  min-width: 220px;
+  }
+
+  .nodes-toolbar select {
+  min-width: 180px;
+  }
 }

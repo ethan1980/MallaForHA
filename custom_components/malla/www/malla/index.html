@@ -78,6 +78,20 @@
         <span id="nodesCount" class="online">0 nodos</span>
     </header>
 
+    <div class="nodes-toolbar">
+      <input id="nodeSearch" type="text" placeholder="Buscar nodo por nombre o ID...">
+
+      <select id="nodeChannelFilter">
+        <option value="all">🌍 Todos los canales</option>
+        <option value="SFNarrow">🟢 SFNarrow</option>
+        <option value="LongFast">🔵 LongFast</option>
+        <option value="MediumSlow">🟠 MediumSlow</option>
+        <option value="Nexus">🟣 Nexus</option>
+        <option value="Iberia">🇪🇸 Iberia</option>
+        <option value="Madrid">🏙️ Madrid</option>
+      </select>
+    </div>
+    
     <div id="nodesList" class="nodes-list">
         <p>Cargando nodos...</p>
     </div>

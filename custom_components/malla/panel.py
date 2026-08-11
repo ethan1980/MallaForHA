@@ -135,8 +135,7 @@ class MallaNodesView(HomeAssistantView):
             lambda: api._get("packets", limit=50)
         )
 
-        _LOGGER.warning("MALLA NODES RAW: %s", data)
-
+        
         if not data:
             return web.json_response([])
 
