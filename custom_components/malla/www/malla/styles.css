@@ -17,7 +17,9 @@ body {
   height: 100vh;
 }
 
-/* Sidebar */
+/* =========================
+   SIDEBAR
+   ========================= */
 
 .sidebar {
   width: 240px;
@@ -58,16 +60,26 @@ body {
   box-shadow: 0 10px 25px rgba(37,99,235,.35);
 }
 
-/* Main */
+/* =========================
+   MAIN
+   ========================= */
 
 main {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  height: 100vh;
+  height: calc(100vh - 0px);
+  max-height: 100vh;
   overflow: hidden;
   background: #020817;
+}
+
+#malla-app {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
 header {
@@ -91,7 +103,9 @@ header h2 {
   font-weight: 600;
 }
 
-/* Vistas */
+/* =========================
+   VISTAS
+   ========================= */
 
 .view {
   flex: 1;
@@ -105,7 +119,9 @@ header h2 {
   display: none;
 }
 
-/* Banner */
+/* =========================
+   BANNER
+   ========================= */
 
 .banner {
   position: fixed;
@@ -125,7 +141,9 @@ header h2 {
   display: none;
 }
 
-/* Messages */
+/* =========================
+   CHAT
+   ========================= */
 
 #messages {
   flex: 1;
@@ -199,7 +217,9 @@ header h2 {
   background: #ea580c;
 }
 
-/* Composer */
+/* =========================
+   COMPOSER
+   ========================= */
 
 .composer {
   border-top: 1px solid rgba(255,255,255,.08);
@@ -246,7 +266,35 @@ header h2 {
   cursor: wait;
 }
 
-/* Nodes */
+/* =========================
+   NODOS
+   ========================= */
+
+.nodes-toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px 0 20px;
+  flex-wrap: wrap;
+}
+
+.nodes-toolbar input,
+.nodes-toolbar select {
+  background: #07132b;
+  border: 1px solid rgba(255,255,255,.08);
+  color: #fff;
+  padding: 12px 14px;
+  border-radius: 14px;
+  outline: none;
+}
+
+.nodes-toolbar input {
+  flex: 1;
+  min-width: 220px;
+}
+
+.nodes-toolbar select {
+  min-width: 180px;
+}
 
 .nodes-list {
   flex: 1;
@@ -304,7 +352,41 @@ header h2 {
   font-family: monospace;
 }
 
-/* Mobile */
+/* =========================
+   MAPA
+   ========================= */
+
+#mapView {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden; /* importante */
+}
+
+#mapView.hidden {
+  display: none;
+}
+
+.map-container {
+  flex: 1;
+  width: 100%;
+  min-height: 500px;
+  height: calc(100vh - 72px); /* resta la cabecera de Malla */
+  position: relative;
+  overflow: hidden;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* =========================
+   MÓVIL
+   ========================= */
 
 @media (max-width: 900px) {
   body {
@@ -333,37 +415,20 @@ header h2 {
     flex-wrap: wrap;
   }
 
-  .composer select {
-    width: 100%;
-  }
-
+  .composer select,
   .composer button {
     width: 100%;
   }
 
-  .nodes-toolbar {
-  display: flex;
-  gap: 12px;
-  padding: 16px 20px 0 20px;
-  flex-wrap: wrap;
+  main {
+    min-width: 0;
   }
 
-  .nodes-toolbar input,
-  .nodes-toolbar select {
-  background: #07132b;
-  border: 1px solid rgba(255,255,255,.08);
-  color: #fff;
-  padding: 12px 14px;
-  border-radius: 14px;
-  outline: none;
+  header {
+    flex-wrap: wrap;
   }
 
-  .nodes-toolbar input {
-  flex: 1;
-  min-width: 220px;
-  }
-
-  .nodes-toolbar select {
-  min-width: 180px;
+  .sidebar {
+    flex-shrink: 0;
   }
 }

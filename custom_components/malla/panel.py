@@ -146,6 +146,26 @@ class MallaNodesView(HomeAssistantView):
         nodes_by_id = {}
 
         for packet in packets:
+
+            lat = None
+            lon = None
+
+            # Extraer coordenadas de paquetes de localización
+            if packet.get("portnum") == 3:
+                payload = packet.get("payload", "")
+
+                try:
+                    for line in payload.splitlines():
+                        if line.startswith("latitude_i:"):
+                            lat = int(line.split(":", 1)[1].strip()) / 1e7
+
+                        elif line.startswith("longitude_i:"):
+                            lon = int(line.split(":", 1)[1].strip()) / 1e7
+
+                except Exception:
+                    lat = None
+                    lon = None
+
             node_id = packet.get("from_node_id")
 
             if not node_id:
@@ -189,6 +209,8 @@ class MallaNodesView(HomeAssistantView):
                 "last_seen": dt.isoformat(),
                 "last_seen_human": last_seen_human,
                 "online": minutes <= 5,
+                "lat": lat,
+                "lon": lon,
                 "last_seen_dt": dt,
             }
 

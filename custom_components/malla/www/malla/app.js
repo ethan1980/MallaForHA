@@ -6,12 +6,15 @@ const channelSelect = document.getElementById('channelSelect');
 
 const tabChat = document.getElementById('tabChat');
 const tabNodes = document.getElementById('tabNodes');
+const tabMap = document.getElementById('tabMap');
 
 const chatView = document.getElementById('chatView');
 const nodesView = document.getElementById('nodesView');
+const mapView = document.getElementById('mapView');
 
 const nodesList = document.getElementById('nodesList');
 const nodesCount = document.getElementById('nodesCount');
+const mapCount = document.getElementById('mapCount');
 
 const nodeSearch = document.getElementById('nodeSearch');
 const nodeChannelFilter = document.getElementById('nodeChannelFilter');
@@ -20,10 +23,12 @@ const sendButton = document.getElementById('sendButton');
 
 const nodeSort = document.getElementById('nodeSort');
 
-console.log('MALLA APP VERSION 6 - NODES FILTERS FIXED');
+console.log('MALLA APP VERSION 7 - MAP FIXED');
 
 let allMessages = [];
 let allNodes = [];
+let map;
+let mapMarkers = [];
 let lastMessageSignature = null;
 
 /* -------------------- Canales -------------------- */
@@ -200,7 +205,7 @@ function applyNodeFilters() {
   const sort = nodeSort.value;
 
   let filtered = allNodes.filter(node => {
-    const name = (node.name || '').toLowerCase();
+    const name = String(node.name || '').toLowerCase();
     const id = String(node.id || '');
 
     const matchesSearch =
@@ -212,14 +217,15 @@ function applyNodeFilters() {
     return matchesSearch && matchesChannel;
   });
 
-  // Ordenación
   filtered.sort((a, b) => {
     switch (sort) {
       case 'oldest':
         return (a.last_seen || '').localeCompare(b.last_seen || '');
 
       case 'name':
-        return (a.name || '').localeCompare(b.name || '');
+        return String(a.name || '').localeCompare(
+          String(b.name || '')
+        );
 
       case 'recent':
       default:
@@ -254,19 +260,106 @@ async function loadNodes() {
 function showChat() {
   chatView.classList.remove('hidden');
   nodesView.classList.add('hidden');
+  mapView.classList.add('hidden');
 
   tabChat.classList.add('active');
   tabNodes.classList.remove('active');
+  tabMap.classList.remove('active');
 }
 
 function showNodes() {
   chatView.classList.add('hidden');
   nodesView.classList.remove('hidden');
+  mapView.classList.add('hidden');
 
   tabChat.classList.remove('active');
   tabNodes.classList.add('active');
+  tabMap.classList.remove('active');
 
   loadNodes();
+}
+
+function showMap() {
+  chatView.classList.add('hidden');
+  nodesView.classList.add('hidden');
+  mapView.classList.remove('hidden');
+
+  tabChat.classList.remove('active');
+  tabNodes.classList.remove('active');
+  tabMap.classList.add('active');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      loadMap();
+
+      setTimeout(() => {
+        if (map) {
+          map.invalidateSize(true);
+        }
+      }, 300);
+    });
+  });
+}
+
+/* -------------------- Mapa -------------------- */
+
+function initMap() {
+  if (map) return;
+
+  map = L.map('map').setView([40.4168, -3.7038], 6);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+}
+
+async function loadMap() {
+  initMap();
+
+  try {
+    const response = await fetch('/api/malla/nodes');
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const nodes = await response.json();
+
+    const gpsNodes = nodes.filter(
+      n => n.lat != null && n.lon != null
+    );
+
+    mapCount.textContent = `${gpsNodes.length} nodos con GPS`;
+
+    mapMarkers.forEach(marker => marker.remove());
+    mapMarkers = [];
+
+    gpsNodes.forEach(node => {
+      const marker = L.marker([node.lat, node.lon]).addTo(map);
+
+      marker.bindPopup(`
+        <strong>${node.name}</strong><br>
+        📡 ${node.channel || '—'}<br>
+        🕒 ${node.last_seen_human || 'desconocido'}<br>
+        ${node.online ? '🟢 Online' : '🔴 Offline'}
+      `);
+
+      mapMarkers.push(marker);
+    });
+
+    if (gpsNodes.length > 0) {
+      const bounds = L.latLngBounds(
+        gpsNodes.map(n => [n.lat, n.lon])
+      );
+
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
+
+    setTimeout(() => map.invalidateSize(true), 100);
+
+  } catch (err) {
+    console.error('Error cargando mapa:', err);
+  }
 }
 
 /* -------------------- Envío -------------------- */
@@ -321,6 +414,7 @@ messageInput.addEventListener('keydown', (ev) => {
 
 tabChat.addEventListener('click', showChat);
 tabNodes.addEventListener('click', showNodes);
+tabMap.addEventListener('click', showMap);
 
 nodeSearch.addEventListener('input', applyNodeFilters);
 nodeChannelFilter.addEventListener('change', applyNodeFilters);
@@ -330,11 +424,26 @@ nodeSort.addEventListener('change', applyNodeFilters);
 
 loadChannels();
 loadMessages();
+showChat();
 
-/* Auto-refresh del chat */
+/* Redibujar mapa al cambiar tamaño */
+window.addEventListener('resize', () => {
+  if (map && !mapView.classList.contains('hidden')) {
+    map.invalidateSize(true);
+  }
+});
+
+const resizeObserver = new ResizeObserver(() => {
+  if (map && !mapView.classList.contains('hidden')) {
+    map.invalidateSize(true);
+  }
+});
+
+resizeObserver.observe(document.body);
+
+/* Auto-refresh */
 setInterval(loadMessages, 3000);
 
-// Auto-refresh de nodos cada 30 segundos si la pestaña está abierta
 setInterval(() => {
   if (!nodesView.classList.contains('hidden')) {
     loadNodes();
