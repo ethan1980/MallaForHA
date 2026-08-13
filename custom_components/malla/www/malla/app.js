@@ -18,6 +18,8 @@ const nodeChannelFilter = document.getElementById('nodeChannelFilter');
 
 const sendButton = document.getElementById('sendButton');
 
+const nodeSort = document.getElementById('nodeSort');
+
 console.log('MALLA APP VERSION 6 - NODES FILTERS FIXED');
 
 let allMessages = [];
@@ -195,8 +197,9 @@ function renderNodes(nodes) {
 function applyNodeFilters() {
   const search = nodeSearch.value.toLowerCase().trim();
   const channel = nodeChannelFilter.value;
+  const sort = nodeSort.value;
 
-  const filtered = allNodes.filter(node => {
+  let filtered = allNodes.filter(node => {
     const name = (node.name || '').toLowerCase();
     const id = String(node.id || '');
 
@@ -207,6 +210,21 @@ function applyNodeFilters() {
       channel === 'all' || node.channel === channel;
 
     return matchesSearch && matchesChannel;
+  });
+
+  // Ordenación
+  filtered.sort((a, b) => {
+    switch (sort) {
+      case 'oldest':
+        return (a.last_seen || '').localeCompare(b.last_seen || '');
+
+      case 'name':
+        return (a.name || '').localeCompare(b.name || '');
+
+      case 'recent':
+      default:
+        return (b.last_seen || '').localeCompare(a.last_seen || '');
+    }
   });
 
   renderNodes(filtered);
@@ -222,7 +240,7 @@ async function loadNodes() {
 
     allNodes = await response.json();
 
-    renderNodes(allNodes);
+    applyNodeFilters();
 
   } catch (err) {
     console.error('Error cargando nodos:', err);
@@ -306,6 +324,7 @@ tabNodes.addEventListener('click', showNodes);
 
 nodeSearch.addEventListener('input', applyNodeFilters);
 nodeChannelFilter.addEventListener('change', applyNodeFilters);
+nodeSort.addEventListener('change', applyNodeFilters);
 
 /* -------------------- Inicio -------------------- */
 
@@ -314,3 +333,10 @@ loadMessages();
 
 /* Auto-refresh del chat */
 setInterval(loadMessages, 3000);
+
+// Auto-refresh de nodos cada 30 segundos si la pestaña está abierta
+setInterval(() => {
+  if (!nodesView.classList.contains('hidden')) {
+    loadNodes();
+  }
+}, 20000);
