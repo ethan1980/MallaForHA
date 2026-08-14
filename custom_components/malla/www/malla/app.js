@@ -28,7 +28,7 @@ console.log('MALLA APP VERSION 7 - MAP FIXED');
 let allMessages = [];
 let allNodes = [];
 let map;
-let mapMarkers = [];
+let markerCluster;
 let lastMessageSignature = null;
 
 /* -------------------- Canales -------------------- */
@@ -74,6 +74,80 @@ function channelClass(channel = '') {
     default:
       return '';
   }
+}
+
+function markerColor(channel = '') {
+  switch (String(channel).toLowerCase()) {
+    case 'sfnarrow':
+      return '#16a34a'; // verde
+    case 'longfast':
+      return '#2563eb'; // azul
+    case 'mediumslow':
+      return '#ea580c'; // naranja
+    case 'nexus':
+      return '#9333ea'; // morado
+    case 'iberia':
+      return '#dc2626'; // rojo
+    case 'madrid':
+      return '#0f766e'; // turquesa
+    default:
+      return '#64748b'; // gris
+  }
+}
+
+function createColorIcon(color) {
+  return L.divIcon({
+    className: 'custom-marker',
+    html: `
+      <div style="
+        width:18px;
+        height:18px;
+        border-radius:50%;
+        background:${color};
+        border:3px solid white;
+        box-shadow:0 2px 6px rgba(0,0,0,.45);
+      "></div>
+    `,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -12]
+  });
+}
+
+function createClusterIcon(markers) {
+  const counts = {};
+
+  markers.getAllChildMarkers().forEach(marker => {
+    const channel = marker.options.channel || 'default';
+    counts[channel] = (counts[channel] || 0) + 1;
+  });
+
+  const dominant = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])[0]?.[0] || 'default';
+
+  const color = markerColor(dominant);
+  const count = markers.getChildCount();
+
+  return L.divIcon({
+    html: `
+      <div style="
+        width:42px;
+        height:42px;
+        border-radius:50%;
+        background:${color};
+        border:3px solid white;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:white;
+        font-weight:700;
+        font-size:14px;
+        box-shadow:0 2px 8px rgba(0,0,0,.35);
+      ">${count}</div>
+    `,
+    className: 'custom-cluster',
+    iconSize: [42, 42]
+  });
 }
 
 /* -------------------- Chat -------------------- */
@@ -311,6 +385,15 @@ function initMap() {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
+
+  markerCluster = L.markerClusterGroup({
+    maxClusterRadius: 50,
+    showCoverageOnHover: false,
+    spiderfyOnMaxZoom: true,
+    iconCreateFunction: createClusterIcon
+  });
+
+  map.addLayer(markerCluster);
 }
 
 async function loadMap() {
@@ -331,21 +414,30 @@ async function loadMap() {
 
     mapCount.textContent = `${gpsNodes.length} nodos con GPS`;
 
-    mapMarkers.forEach(marker => marker.remove());
-    mapMarkers = [];
+    markerCluster.clearLayers();
 
-    gpsNodes.forEach(node => {
-      const marker = L.marker([node.lat, node.lon]).addTo(map);
+const markers = [];
 
-      marker.bindPopup(`
-        <strong>${node.name}</strong><br>
-        📡 ${node.channel || '—'}<br>
-        🕒 ${node.last_seen_human || 'desconocido'}<br>
-        ${node.online ? '🟢 Online' : '🔴 Offline'}
-      `);
+gpsNodes.forEach(node => {
+  const marker = L.marker(
+    [node.lat, node.lon],
+    {
+      icon: createColorIcon(markerColor(node.channel)),
+      channel: node.channel
+    }
+  );
 
-      mapMarkers.push(marker);
-    });
+  marker.bindPopup(`
+    <strong>${node.name}</strong><br>
+    📡 ${node.channel || '—'}<br>
+    🕒 ${node.last_seen_human || 'desconocido'}<br>
+    ${node.online ? '🟢 Online' : '🔴 Offline'}
+  `);
+
+  markers.push(marker);
+});
+
+markerCluster.addLayers(markers);
 
     if (gpsNodes.length > 0) {
       const bounds = L.latLngBounds(

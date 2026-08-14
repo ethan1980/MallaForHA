@@ -1,159 +1,172 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Malla</title>
 
-    <link rel="stylesheet" href="styles.css" />
+```
+<link rel="stylesheet" href="styles.css" />
 
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+<!-- Leaflet -->
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<!-- MarkerCluster -->
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+/>
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+/>
+```
+
 </head>
 
 <body>
 
 <div id="malla-app">
 
-    <aside class="sidebar">
+```
+<aside class="sidebar">
 
-        <h1>🌐 Malla</h1>
+    <h1>🌐 Malla</h1>
 
-        <nav>
+    <nav>
 
-            <button id="tabChat" class="active">💬 Chat</button>
+        <button id="tabChat" class="active">💬 Chat</button>
 
-            <button id="tabNodes">📡 Nodos</button>
+        <button id="tabNodes">📡 Nodos</button>
 
-            <button id="tabMap">🗺️ Mapa</button>
+        <button id="tabMap">🗺️ Mapa</button>
 
-            <button>📊 Estadísticas</button>
+        <button>📊 Estadísticas</button>
 
-            <button>❤️ Salud</button>
+        <button>❤️ Salud</button>
 
-            <button>⚙ Configuración</button>
+        <button>⚙ Configuración</button>
 
-        </nav>
+    </nav>
 
-    </aside>
+</aside>
 
-    <main>
+<main>
 
-        <!-- ================= CHAT ================= -->
+    <!-- ================= CHAT ================= -->
 
-        <section id="chatView" class="view active">
+    <section id="chatView" class="view active">
 
-            <header>
+        <header>
 
-                <h2>Global MeshView Chat</h2>
+            <h2>Global MeshView Chat</h2>
 
-                <span class="online">🟢 Online</span>
+            <span class="online">🟢 Online</span>
 
-            </header>
+        </header>
 
-            <div id="newMessagesBanner" class="banner hidden">
-                📡 Nuevos mensajes recibidos
-            </div>
+        <div id="newMessagesBanner" class="banner hidden">
+            📡 Nuevos mensajes recibidos
+        </div>
 
-            <section id="messages">
-                <!-- Mensajes dinámicos -->
-            </section>
+        <section id="messages"></section>
 
-            <footer class="composer">
+        <footer class="composer">
 
-                <input
-                    id="messageInput"
-                    type="text"
-                    placeholder="Escribe un mensaje..."
-                    autocomplete="off"
-                />
+            <input
+                id="messageInput"
+                type="text"
+                placeholder="Escribe un mensaje..."
+                autocomplete="off"
+            />
 
-                <select id="channelSelect">
-                    <option value="SFNarrow" selected>🟢 SFNarrow</option>
-                    <option value="LongFast">🔵 LongFast</option>
-                    <option value="MediumSlow">🟠 MediumSlow</option>
-                    <option value="Nexus">🟣 Nexus</option>
-                    <option value="Iberia">🇪🇸 Iberia</option>
-                    <option value="Madrid">🏙️ Madrid</option>
-                </select>
+            <select id="channelSelect"></select>
 
-                <button id="sendButton">
-                    Enviar
-                </button>
+            <button id="sendButton">Enviar</button>
 
-            </footer>
+        </footer>
 
-        </section>
+    </section>
 
-        <!-- ================= NODOS ================= -->
+    <!-- ================= NODOS ================= -->
 
-        <section id="nodesView" class="view hidden">
+    <section id="nodesView" class="view hidden">
 
-            <header>
+        <header>
 
-                <h2>📡 Nodos MeshView</h2>
+            <h2>📡 Nodos MeshView</h2>
 
-                <span id="nodesCount" class="online">0 nodos</span>
+            <span id="nodesCount" class="online">0 nodos</span>
 
-            </header>
+        </header>
 
-            <div class="nodes-toolbar">
+        <div class="nodes-toolbar">
 
-                <input
-                    id="nodeSearch"
-                    type="text"
-                    placeholder="Buscar nodo por nombre o ID..."
-                />
+            <input
+                id="nodeSearch"
+                type="text"
+                placeholder="Buscar nodo por nombre o ID..."
+            />
 
-                <select id="nodeChannelFilter">
-                    <option value="all">🌍 Todos los canales</option>
-                    <option value="SFNarrow">🟢 SFNarrow</option>
-                    <option value="LongFast">🔵 LongFast</option>
-                    <option value="MediumSlow">🟠 MediumSlow</option>
-                    <option value="Nexus">🟣 Nexus</option>
-                    <option value="Iberia">🇪🇸 Iberia</option>
-                    <option value="Madrid">🏙️ Madrid</option>
-                </select>
+            <select id="nodeChannelFilter">
+                <option value="all">🌍 Todos los canales</option>
+                <option value="SFNarrow">🟢 SFNarrow</option>
+                <option value="LongFast">🔵 LongFast</option>
+                <option value="MediumSlow">🟠 MediumSlow</option>
+                <option value="Nexus">🟣 Nexus</option>
+                <option value="Iberia">🇪🇸 Iberia</option>
+                <option value="Madrid">🏙️ Madrid</option>
+            </select>
 
-                <select id="nodeSort">
-                    <option value="recent" selected>🕒 Más recientes</option>
-                    <option value="oldest">📜 Más antiguos</option>
-                    <option value="name">🔤 Nombre A-Z</option>
-                </select>
+            <select id="nodeSort">
+                <option value="recent" selected>🕒 Más recientes</option>
+                <option value="oldest">📜 Más antiguos</option>
+                <option value="name">🔤 Nombre A-Z</option>
+            </select>
 
-            </div>
+        </div>
 
-            <div id="nodesList" class="nodes-list">
-                <p>Cargando nodos...</p>
-            </div>
+        <div id="nodesList" class="nodes-list">
+            <p>Cargando nodos...</p>
+        </div>
 
-        </section>
+    </section>
 
-        <!-- ================= MAPA ================= -->
+    <!-- ================= MAPA ================= -->
 
-        <section id="mapView" class="view hidden">
+    <section id="mapView" class="view hidden">
 
-            <header>
+        <header>
 
-                <h2>🗺️ Mapa de nodos</h2>
+            <h2>🗺️ Mapa de nodos</h2>
 
-                <span id="mapCount" class="online">0 nodos con GPS</span>
+            <span id="mapCount" class="online">0 nodos con GPS</span>
 
-            </header>
+        </header>
 
-            <div class="map-container">
-                <div id="map"></div>
-            </div>
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
 
-        </section>
+    </section>
 
-    </main>
+</main>
+```
 
 </div>
 
+<!-- Leaflet -->
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- MarkerCluster -->
+
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
 <script src="app.js"></script>
 
 </body>
