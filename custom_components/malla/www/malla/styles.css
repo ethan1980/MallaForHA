@@ -389,8 +389,22 @@ header h2 {
    ========================= */
 
 @media (max-width: 900px) {
+  html,
+  body {
+    height: auto;
+    min-height: 100%;
+    overflow: auto;
+  }
+
   body {
     flex-direction: column;
+  }
+
+  #malla-app {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
   }
 
   .sidebar {
@@ -400,6 +414,7 @@ header h2 {
     overflow-x: auto;
     gap: 16px;
     padding: 12px;
+    flex-shrink: 0;
   }
 
   .sidebar h1 {
@@ -411,6 +426,24 @@ header h2 {
     flex-direction: row;
   }
 
+  main {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .view {
+    overflow-y: visible;
+  }
+
+  #messages,
+  .nodes-list {
+    overflow-y: visible;
+  }
+
   .composer {
     flex-wrap: wrap;
   }
@@ -420,15 +453,7 @@ header h2 {
     width: 100%;
   }
 
-  main {
-    min-width: 0;
-  }
-
   header {
     flex-wrap: wrap;
-  }
-
-  .sidebar {
-    flex-shrink: 0;
   }
 }
